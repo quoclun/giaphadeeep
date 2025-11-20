@@ -1,12 +1,18 @@
 import express from 'npm:express@4.18.2';
 import { load } from 'https://deno.land/std/dotenv/mod.ts';
 import memberRoutes from './routes/members.js';
+import { join, dirname } from 'https://deno.land/std/path/mod.ts';
+import { fileURLToPath } from 'https://deno.land/std/node/url.ts';
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const env = await load();
 const app = express();
 
 app.use(express.json());
-app.use(express.static('frontend'));
+
+// Phục vụ static files từ thư mục frontend (cùng cấp với backend)
+const frontendPath = join(__dirname, '../frontend');
+app.use(express.static(frontendPath));
 
 // Routes
 app.use('/api', memberRoutes);
@@ -23,9 +29,15 @@ app.get('/', (_req, res) => {
   });
 });
 
+// Fallback: trả về index.html cho các route không khớp (cho SPA)
+app.get('*', (_req, res) => {
+  res.sendFile(join(frontendPath, 'index.html'));
+});
+
 const port = env.PORT || Deno.env.get('PORT') || 3000;
 app.listen(port, () => {
   console.log(`🚀 Server running on port ${port}`);
   console.log(`📍 Local: http://localhost:${port}`);
   console.log(`🌐 API: http://localhost:${port}/api/tree`);
+  console.log(`📁 Static files from: ${frontendPath}`);
 });
