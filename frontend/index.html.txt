@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cây Gia Phả - Dòng Họ Nguyễn</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌳 Cây Gia Phả Dòng Họ</h1>
+            <p>Lưu giữ và kết nối các thế hệ</p>
+        </header>
+
+        <main>
+            <div class="tree-container">
+                <div id="tree"></div>
+            </div>
+
+            <div class="info-panel">
+                <h3>Thông tin thành viên</h3>
+                <div id="member-info">
+                    <p>Chọn một thành viên để xem thông tin</p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>© 2024 Gia Phả Deep - Bảo tồn di sản gia đình</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

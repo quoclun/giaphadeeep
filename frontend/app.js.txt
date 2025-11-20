@@ -1,0 +1,124 @@
+class FamilyTree {
+    constructor(containerId) {
+        this.containerId = containerId;
+        this.margin = { top: 20, right: 120, bottom: 20, left: 120 };
+        this.width = 800 - this.margin.right - this.margin.left;
+        this.height = 600 - this.margin.top - this.margin.bottom;
+        this.init();
+    }
+
+    init() {
+        this.treeLayout = d3.tree().size([this.height, this.width]);
+        this.svg = d3.select(`#${this.containerId}`).append('svg')
+            .attr('width', this.width + this.margin.right + this.margin.left)
+            .attr('height', this.height + this.margin.top + this.margin.bottom)
+            .append('g')
+            .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
+    }
+
+    async loadData() {
+        try {
+            const response = await fetch('/api/tree');
+            const treeData = await response.json();
+            this.render(treeData);
+        } catch (error) {
+            console.error('Lỗi tải dữ liệu:', error);
+            this.render(this.getSampleData());
+        }
+    }
+
+    render(treeData) {
+        // Clear previous content
+        this.svg.selectAll('*').remove();
+
+        const root = d3.hierarchy(treeData);
+        const treeDataLayout = this.treeLayout(root);
+
+        // Links
+        this.svg.selectAll('.link')
+            .data(treeDataLayout.links())
+            .enter().append('path')
+            .attr('class', 'link')
+            .attr('d', d3.linkHorizontal()
+                .x(d => d.y)
+                .y(d => d.x));
+
+        // Nodes
+        const node = this.svg.selectAll('.node')
+            .data(treeDataLayout.descendants())
+            .enter().append('g')
+            .attr('class', d => `node generation-${this.getGeneration(d)}`)
+            .attr('transform', d => `translate(${d.y},${d.x})`);
+
+        // Node rectangles
+        node.append('rect')
+            .attr('width', 120)
+            .attr('height', 40)
+            .attr('x', -60)
+            .attr('y', -20);
+
+        // Node text
+        node.append('text')
+            .attr('dy', '.35em')
+            .attr('text-anchor', 'middle')
+            .text(d => d.data.name)
+            .style('fill', 'white')
+            .style('font-size', '10px');
+
+        // Add click event
+        node.on('click', (event, d) => {
+            this.showMemberInfo(d.data);
+        });
+    }
+
+    getGeneration(node) {
+        return node.depth + 1;
+    }
+
+    showMemberInfo(member) {
+        const infoDiv = document.getElementById('member-info');
+        infoDiv.innerHTML = `
+            <div class="member-card">
+                <h4>${member.name}</h4>
+                <p><strong>Thế hệ:</strong> ${member.title || 'Thế hệ ' + (this.getGeneration({depth: member.id % 3}))}</p>
+                <p><strong>ID:</strong> ${member.id}</p>
+                ${member.birthYear ? `<p><strong>Năm sinh:</strong> ${member.birthYear}</p>` : ''}
+            </div>
+        `;
+    }
+
+    getSampleData() {
+        return {
+            "id": 1,
+            "name": "Nguyễn Văn A (1950)",
+            "title": "Thế hệ 1",
+            "children": [
+                {
+                    "id": 2,
+                    "name": "Nguyễn Văn C (1980)",
+                    "title": "Thế hệ 2",
+                    "children": [
+                        {
+                            "id": 5, 
+                            "name": "Nguyễn Văn E (2010)",
+                            "title": "Thế hệ 3"
+                        }
+                    ]
+                },
+                {
+                    "id": 3,
+                    "name": "Nguyễn Thị D (1985)", 
+                    "title": "Thế hệ 2"
+                }
+            ]
+        };
+    }
+}
+
+// Initialize the application
+document.addEventListener('DOMContentLoaded', async () => {
+    const familyTree = new FamilyTree('tree');
+    await familyTree.loadData();
+    
+    console.log('🌳 Ứng dụng gia phả đã khởi chạy');
+});

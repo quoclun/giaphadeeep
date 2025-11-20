@@ -1,0 +1,18 @@
+// Database configuration
+export const dbConfig = {
+  host: Deno.env.get('DB_HOST') || 'localhost',
+  port: Deno.env.get('DB_PORT') || 5432,
+  database: Deno.env.get('DB_NAME') || 'giapha',
+  user: Deno.env.get('DB_USER') || 'postgres',
+  password: Deno.env.get('DB_PASSWORD') || '',
+};
+
+export const initDatabase = async () => {
+  console.log('📊 Database initialized with sample data');
+  return {
+    members: [
+      { id: 1, name: 'Nguyễn Văn A', generation: 1, birthYear: 1950 },
+      { id: 2, name: 'Nguyễn Thị B', generation: 1, birthYear: 1955 }
+    ]
+  };
+};

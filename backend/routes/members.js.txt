@@ -1,0 +1,46 @@
+import { Router } from 'npm:express@4.18.2';
+
+const router = Router();
+
+// Sample data
+const members = [
+  { id: 1, name: 'Nguyễn Văn A', generation: 1, birthYear: 1950 },
+  { id: 2, name: 'Nguyễn Thị B', generation: 1, birthYear: 1955 },
+  { id: 3, name: 'Nguyễn Văn C', generation: 2, birthYear: 1980 },
+  { id: 4, name: 'Nguyễn Thị D', generation: 2, birthYear: 1985 },
+  { id: 5, name: 'Nguyễn Văn E', generation: 3, birthYear: 2010 }
+];
+
+router.get('/members', (_req, res) => {
+  res.json(members);
+});
+
+router.get('/tree', (_req, res) => {
+  const treeData = {
+    "id": 1,
+    "name": "Nguyễn Văn A (1950)",
+    "title": "Thế hệ 1",
+    "children": [
+      {
+        "id": 2,
+        "name": "Nguyễn Văn C (1980)",
+        "title": "Thế hệ 2",
+        "children": [
+          {
+            "id": 5, 
+            "name": "Nguyễn Văn E (2010)",
+            "title": "Thế hệ 3"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "name": "Nguyễn Thị D (1985)", 
+        "title": "Thế hệ 2"
+      }
+    ]
+  };
+  res.json(treeData);
+});
+
+export default router;
